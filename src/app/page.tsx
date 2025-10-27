@@ -1,7 +1,10 @@
 
-const Page = () => {
+const Page =async () => {
+
   return (
+    <>
     <div>HEllow world</div>
+    </>
   )
 }
 
