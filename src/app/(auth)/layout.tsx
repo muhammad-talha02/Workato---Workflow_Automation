@@ -1,9 +1,10 @@
+import AuthLayout from "@/features/auth/components/auth-layout";
 import { notRequiedAuth } from "@/lib/better-auth/auth-utils";
 import { ReactNode } from "react";
 
-const Authlayout = async ({ children }: { children: ReactNode }) => {
+const Layout = async ({ children }: { children: ReactNode }) => {
   await notRequiedAuth();
-  return <>{children}</>;
+  return <AuthLayout>{children}</AuthLayout>;
 };
 
-export default Authlayout;
+export default Layout;

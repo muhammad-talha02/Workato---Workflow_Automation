@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -75,6 +76,7 @@ const isFormSubmitting = form.formState.isSubmitting
                     type="button"
                     disabled={isFormSubmitting}
                   >
+                    <Image src={"logos/github.svg"} width={20} height={20} alt="Github"  />
                     Continue With Github
                   </Button>
                   <Button
@@ -83,6 +85,7 @@ const isFormSubmitting = form.formState.isSubmitting
                     type="button"
                     disabled={isFormSubmitting}
                   >
+                    <Image src={"logos/google.svg"} width={20} height={20} alt="Github"  />
                     Continue With Google
                   </Button>
                 </div>

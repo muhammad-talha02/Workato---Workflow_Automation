@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { toast } from "sonner";
+import Image from "next/image";
 const resgisterSchema = z
   .object({
     email: z.email("Please enter a valid email address"),
@@ -84,6 +85,12 @@ const RegisterForm = () => {
                     type="button"
                     disabled={isFormSubmitting}
                   >
+                    <Image
+                      src={"logos/github.svg"}
+                      width={20}
+                      height={20}
+                      alt="Github"
+                    />
                     Continue With Github
                   </Button>
                   <Button
@@ -92,6 +99,12 @@ const RegisterForm = () => {
                     type="button"
                     disabled={isFormSubmitting}
                   >
+                    <Image
+                      src={"logos/google.svg"}
+                      width={20}
+                      height={20}
+                      alt="Github"
+                    />
                     Continue With Google
                   </Button>
                 </div>
