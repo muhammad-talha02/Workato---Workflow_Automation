@@ -1,15 +1,7 @@
-import LoginForm from "@/features/auth/components/login-form"
-import { requiredAuth } from "@/lib/better-auth/auth-utils"
-import Image from "next/image"
-import Link from "next/link"
+import LoginForm from "@/features/auth/components/login-form";
 
 const Page = () => {
-  
-  return (
-         
-           <LoginForm/>
-     
-  )
-}
+  return <LoginForm />;
+};
 
-export default Page
+export default Page;
