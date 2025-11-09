@@ -1,12 +1,14 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { inngest } from "./client";
+import * as Sentry from "@sentry/nextjs";
 
 const google = createGoogleGenerativeAI();
 export const helloWorld = inngest.createFunction(
   { id: "execute-ai" },
   { event: "execute/ai" },
   async ({ event, step }) => {
+    Sentry.logger.info('User triggered test log', { log_source: 'sentry_test' })
     const { steps } = await step.ai.wrap(
       "gemini-generating-text",
       generateText,
@@ -14,9 +16,14 @@ export const helloWorld = inngest.createFunction(
         model: google("gemini-2.5-flash"),
         system: "You are a helpful assistent",
         prompt: "what is 5 + 2",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     );
 
-    return steps
+    return steps;
   }
 );
