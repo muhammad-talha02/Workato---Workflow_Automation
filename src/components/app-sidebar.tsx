@@ -1,4 +1,6 @@
 "use client";
+import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription";
+import { authClient } from "@/lib/better-auth/auth-client";
 import {
   CreditCardIcon,
   FolderOpenIcon,
@@ -7,7 +9,9 @@ import {
   LogOutIcon,
   StarIcon,
 } from "lucide-react";
-import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -19,14 +23,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { authClient } from "@/lib/better-auth/auth-client";
 
 const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const {hasActiveSubcription, isLoading} = useHasActiveSubscription()
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -75,19 +76,21 @@ const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
+         {!hasActiveSubcription && !isLoading && <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Upgrade to Pro"
               className="gap-x-4 h-10 px-4"
+              onClick={()=> authClient.checkout({slug:'pro'})}
             >
               <StarIcon className="w-4 h-4" />
               <span>Upgrade to Pro</span>
             </SidebarMenuButton>
-          </SidebarMenuItem>
+          </SidebarMenuItem>}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Billing Portal"
               className="gap-x-4 h-10 px-4"
+              onClick={()=> authClient.customer.portal()}
             >
               <CreditCardIcon className="w-4 h-4" />
               <span>Billing Portal</span>

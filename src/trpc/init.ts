@@ -1,4 +1,5 @@
 import { getAuthSession } from '@/lib/better-auth/auth-utils';
+import { polarClient } from '@/lib/polar';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { cache } from 'react';
 export const createTRPCContext = cache(async () => {
@@ -31,4 +32,17 @@ if(!session){
   })
 }
   return next({ctx:{...ctx,auth:session}})
+});
+
+export const premuimProcedure = protectedProcedure.use(async ({ctx, next})=>{
+const customer = await polarClient.customers.getStateExternal({
+  externalId:ctx.auth.user?.id
+})
+if(!customer.activeSubscriptions || customer.activeSubscriptions.length === 0){
+  throw new TRPCError({
+    code:"FORBIDDEN",
+    message:"Active Subcription Required"
+  })
+}
+  return next({ctx:{...ctx,customer }})
 });
