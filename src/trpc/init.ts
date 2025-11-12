@@ -1,12 +1,12 @@
-import { getAuthSession } from '@/lib/better-auth/auth-utils';
-import { polarClient } from '@/lib/polar';
-import { initTRPC, TRPCError } from '@trpc/server';
-import { cache } from 'react';
+import { getAuthSession } from "@/lib/better-auth/auth-utils";
+import { polarClient } from "@/lib/polar";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { cache } from "react";
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  return { userId: 'user_123' };
+  return { userId: "user_123" };
 });
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
@@ -22,27 +22,32 @@ const t = initTRPC.create({
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
-export const protectedProcedure = baseProcedure.use(async ({ctx, next})=>{
-const session = await getAuthSession()
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
+  const session = await getAuthSession();
 
-if(!session){
-  throw new TRPCError({
-    code:"UNAUTHORIZED",
-    message:"You are not authroized bro"
-  })
-}
-  return next({ctx:{...ctx,auth:session}})
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You are not authroized bro",
+    });
+  }
+  return next({ ctx: { ...ctx, auth: session } });
 });
 
-export const premuimProcedure = protectedProcedure.use(async ({ctx, next})=>{
-const customer = await polarClient.customers.getStateExternal({
-  externalId:ctx.auth.user?.id
-})
-if(!customer.activeSubscriptions || customer.activeSubscriptions.length === 0){
-  throw new TRPCError({
-    code:"FORBIDDEN",
-    message:"Active Subcription Required"
-  })
-}
-  return next({ctx:{...ctx,customer }})
-});
+export const premuimProcedure = protectedProcedure.use(
+  async ({ ctx, next }) => {
+    const customer = await polarClient.customers.getStateExternal({
+      externalId: ctx.auth.user?.id,
+    });
+    if (
+      !customer.activeSubscriptions ||
+      customer.activeSubscriptions.length === 0
+    ) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Active Subcription Required",
+      });
+    }
+    return next({ ctx: { ...ctx, customer } });
+  }
+);
