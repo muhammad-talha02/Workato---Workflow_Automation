@@ -33,3 +33,25 @@ export const useCreatWorkflow = () => {
     })
   );
 };
+
+// Remove Workflow
+
+export const useRemoveWorkflow = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflow.remove.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow "${data.name}" deleted`);
+        queryClient.invalidateQueries(trpc.workflow.getMany.queryOptions({}));
+        queryClient.invalidateQueries(
+          trpc.workflow.getOne.queryFilter({ id: data.id })
+        );
+      },
+      onError: (error) => {
+        toast.error(`Failed to delete workflow. ${error.message}`);
+      },
+    })
+  );
+};
