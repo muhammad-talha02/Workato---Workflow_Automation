@@ -14,8 +14,10 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { NodeType } from "@/generated/prisma/enums";
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
 import Image from "next/image";
+import { Separator } from "./ui/separator";
+import { toast } from "sonner";
 
 // import {NodeType} from "@/generated/prisma/browser"
 
@@ -30,7 +32,8 @@ const triggerNodes: NodeTypeOption[] = [
   {
     type: NodeType.MANUAL_TRIGGER,
     label: "Manual Trigger",
-    description: "Run a manual trigger",
+    description:
+      "Runs the flow on clicking a button. Good for geting starting quickly",
     icon: MousePointerIcon,
   },
 ];
@@ -50,11 +53,89 @@ interface NodeSelectorProps {
   children: ReactNode;
 }
 
+export const NodeTypeSelector = ({
+  icon,
+  label,
+  type,
+  description,
+  onClick,
+}: NodeTypeOption & { onClick: () => void }) => {
+  const Icon = icon;
+  return (
+    <div
+      className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
+      key={type}
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-6 w-full overflow-hidden">
+        {typeof Icon === "string" ? (
+          <Image
+            src={Icon}
+            alt={label}
+            width={20}
+            height={20}
+            className="size-5 object-contain rounded-sm"
+          />
+        ) : (
+          <Icon className="size-5" />
+        )}
+        <div className="flex flex-col items-start text-left">
+          <span className="font-medium text-sm">{label}</span>
+          <span className="text-xs text-muted-foreground">{description}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const NodeSelector = ({
   children,
   onOpenChange,
   open,
 }: NodeSelectorProps) => {
+  const { getNodes, setNodes, screenToFlowPosition } = useReactFlow();
+
+  const handleNodesSelect = useCallback(
+    (selection: NodeTypeOption) => {
+      if (selection.type === NodeType.MANUAL_TRIGGER) {
+        const nodes = getNodes();
+
+        const hasManualTrigger = nodes.some(
+          (node) => node.type === NodeType.MANUAL_TRIGGER
+        );
+        if (hasManualTrigger) {
+          toast.error("Only one manual trigger is allowed per workflow");
+          return;
+        }
+      }
+         setNodes((nodes) => {
+          const hasInitialTrigger = nodes.some(
+            (node) => node.type === NodeType.INITIAL
+          );
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          const flowPosition = screenToFlowPosition({
+            x: centerX + (Math.random() - 0.5) * 200,
+            y: centerY + (Math.random() - 0.5) * 200,
+          });
+
+          const newNode = {
+            id: createId(),
+            data: {},
+            position: flowPosition,
+            type: selection.type,
+          };
+
+          if (hasInitialTrigger) {
+            return [newNode];
+          }
+          return [...nodes, newNode];
+        });
+        onOpenChange(false);
+    },
+    [getNodes, setNodes, screenToFlowPosition, onOpenChange]
+  );
+
   return (
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -62,34 +143,27 @@ export const NodeSelector = ({
         <SheetHeader>
           <SheetTitle>What trigger this workflow?</SheetTitle>
           <SheetDescription>
-            A Trigger is a step that starts your workflow
+            A Trigger is a step that starts your workflow.
           </SheetDescription>
         </SheetHeader>
         <div className="">
-          {triggerNodes?.map((nodeType) => {
-            const Icon = nodeType.icon;
-            return (
-              <div
-                className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                key={nodeType.type}
-                onClick={() => {}}
-              >
-                <div className="flex items-center gap-6 w-full overflow-hidden">
-                  {typeof Icon === "string" ? (
-                    <Image
-                      src={Icon}
-                      alt={nodeType.label}
-                      width={20}
-                      height={20}
-                      className="size-5 object-contain rounded-sm"
-                    />
-                  ) : (
-                    <Icon className="size-5" />
-                  )}
-                </div>
-              </div>
-            );
-          })}
+          {triggerNodes?.map((nodeType) => (
+            <NodeTypeSelector
+              key={nodeType.type}
+              {...nodeType}
+              onClick={() => handleNodesSelect(nodeType)}
+            />
+          ))}
+        </div>
+        <Separator />
+        <div className="">
+          {executionNodes?.map((nodeType) => (
+            <NodeTypeSelector
+              key={nodeType.type}
+              {...nodeType}
+              onClick={() => handleNodesSelect(nodeType)}
+            />
+          ))}
         </div>
       </SheetContent>
     </Sheet>
