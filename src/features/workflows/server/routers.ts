@@ -32,6 +32,72 @@ export const workflowsRouter = createTRPCRouter({
         where: { userId: ctx.auth.user.id, id: input.id },
       });
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        nodes: z.array(
+          z.object({
+            id: z.string(),
+            type: z.string().nullish(),
+            position: z.object({ x: z.number(), y: z.number() }),
+            data: z.record(z.string(), z.any()).optional(),
+          })
+        ),
+        edges: z.array(
+          z.object({
+            source: z.string(),
+            target: z.string(),
+            sourceHandle: z.string().nullish(),
+            targetHandle: z.string().nullish(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, nodes, edges } = input;
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id, userId: ctx.auth.user.id },
+      });
+
+      // Transaction to ensure conistency
+      return await prisma.$transaction(async (tx) => {
+        // Delete existing nodes and connections (cascade deletes connections)
+        await tx.node.deleteMany({
+          where: { workflowId: id },
+        });
+
+        // Create new nodes
+        await tx.node.createMany({
+          data: nodes.map((x) => ({
+            id: x.id,
+            workflowId: id,
+            name: x.type || "unknown",
+            type: x.type as NodeType,
+            position: x.position,
+            data: x.data || [],
+          })),
+        });
+
+        // Create Connections
+        await tx.connection.createMany({
+          data: edges.map((x) => ({
+            workflowId: id,
+            fromNodeId: x.source,
+            toNodeId: x.target,
+            fromOutput: x.sourceHandle || "main",
+            toInput: x.targetHandle || "main",
+          })),
+        });
+
+        // Update workflow's updatedAt Timestamps
+        await tx.workflow.update({
+          where: { id },
+          data: { updatedAt: new Date() },
+        });
+        return workflow;
+      });
+    }),
   updateName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string().min(1) }))
     .mutation(({ ctx, input }) => {

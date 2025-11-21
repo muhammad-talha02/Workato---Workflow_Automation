@@ -20,6 +20,8 @@ import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSusupenseWorkflow } from "@/features/workflows/hooks/use-workflow";
 import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
+import { useSetAtom } from "jotai";
+import { editorAtom } from "../store/atom";
 
 export const EditorLoading = () => {
   return <LoadingView message="Loading editor..." />;
@@ -32,6 +34,9 @@ export const EditorError = () => {
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data } = useSusupenseWorkflow(workflowId);
+
+  const setEditor = useSetAtom(editorAtom)
+
   const [nodes, setNodes] = useState<Node[]>(data?.nodes);
   const [edges, setEdges] = useState<Edge[]>(data?.edges);
 
@@ -60,6 +65,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeComponents}
+        onInit={setEditor}
         fitView
         
     >
