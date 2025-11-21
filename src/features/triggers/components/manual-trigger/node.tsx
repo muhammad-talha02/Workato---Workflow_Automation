@@ -1,7 +1,7 @@
 "use client";
 
-import type { Node, NodeProps } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import type { NodeProps } from "@xyflow/react";
+import { MousePointerIcon } from "lucide-react";
 import { memo } from "react";
 import { BaseTriggerNode } from "../base-trigger-node";
 

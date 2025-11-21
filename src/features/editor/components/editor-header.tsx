@@ -14,11 +14,19 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import {
   useSusupenseWorkflow,
+  useUpdateWorkflow,
   useUpdateWorkflowName,
 } from "@/features/workflows/hooks/use-workflow";
 import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useAtomValue } from "jotai";
+import { editorAtom } from "../store/atom";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+
+  const editor = useAtomValue(editorAtom)
+  const saveWorkflow = useUpdateWorkflow()
+
+  const handleSave = ()=>{}
   return (
     <div className="ml-auto">
       <Button size={"sm"} onClick={() => {}} disabled={false}>
