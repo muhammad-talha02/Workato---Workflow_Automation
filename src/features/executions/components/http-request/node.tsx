@@ -1,13 +1,15 @@
 "use client";
 
-import type { Node, NodeProps } from "@xyflow/react";
+import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { GlobeIcon } from "lucide-react";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { BaseExecutionNode } from "../base-execution-node";
+import { NodeStatus } from "@/components/react-flow/node-status-indicator";
+import HTTPRequestDialog, { HTTPRequestSchema } from "./dialog";
 
 type HttpRequestNodeData = {
   endpoint?: string;
-  method?: RequestInit;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
   [key: string]: unknown;
 };
@@ -19,6 +21,27 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
   const description = nodeData?.endpoint
     ? `${nodeData?.method || "GET"}: ${nodeData.endpoint}`
     : "not configured";
+  const [open, setOpen] = useState(false);
+  const { setNodes } = useReactFlow();
+  const handleSave = (values: HTTPRequestSchema) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === props.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              endpoint: values.endpoint,
+              method: values.method,
+              body: values?.body,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <>
       <BaseExecutionNode
@@ -27,8 +50,17 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
         icon={GlobeIcon}
         name="HTTP Request"
         description={description}
-        onSettings={()=>{}}
-        onDoubleClick={()=>{}}
+        onSettings={() => setOpen(true)}
+        onDoubleClick={() => setOpen(true)}
+        status={"initial"}
+      />
+      <HTTPRequestDialog
+        open={open}
+        onOpenChange={setOpen}
+        onSubmit={handleSave}
+        defaultEndPoint={nodeData.endpoint}
+        defaultMethod={nodeData.method}
+        defaultBody={nodeData.body}
       />
     </>
   );
