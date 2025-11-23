@@ -41,13 +41,13 @@ const WorkflowNode = ({
         <NodeToolbar
           position={Position.Bottom}
           isVisible
-          className="w-max-[200px] text-center"
+          className="max-w-[200px] text-center"
         >
           <p className="font-medium">{name}</p>
           {description && (
-            <div className="text-muted-foreground truncate text-sm">
+            <p className="text-muted-foreground truncate text-sm">
               {description}
-            </div>
+            </p>
           )}
         </NodeToolbar>
       )}
