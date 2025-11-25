@@ -1,29 +1,33 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateText } from "ai";
 import { inngest } from "./client";
-import * as Sentry from "@sentry/nextjs";
+import { NonRetriableError } from "inngest";
+import prisma from "@/lib/db";
 
 const google = createGoogleGenerativeAI();
-export const helloWorld = inngest.createFunction(
-  { id: "execute-ai" },
-  { event: "execute/ai" },
+export const executeWorkflow = inngest.createFunction(
+  { id: "execute-workflow" },
+  { event: "worflows/execute.workflow" },
   async ({ event, step }) => {
-    Sentry.logger.info('User triggered test log', { log_source: 'sentry_test' })
-    const { steps } = await step.ai.wrap(
-      "gemini-generating-text",
-      generateText,
-      {
-        model: google("gemini-2.5-flash"),
-        system: "You are a helpful assistent",
-        prompt: "what is 5 + 2",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
-        },
-      }
-    );
+    const workflowId = event.data.workflowId;
 
-    return steps;
+    if (!workflowId) {
+      throw new NonRetriableError("Workflow ID is missing");
+    }
+
+    const nodes = await step.run("prepare worflow", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id: workflowId,
+        },
+        include: {
+          nodes: true,
+          connections: true,
+        },
+      });
+
+      return workflow.nodes;
+    });
+
+    return { nodes };
   }
 );

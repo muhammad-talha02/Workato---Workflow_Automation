@@ -36,37 +36,33 @@ const formSchema = z.object({
   body: z.string().optional(),
   //TODO .refine()
 });
-export type HTTPRequestSchema = z.infer<typeof formSchema>;
+export type HTTPRequestFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: HTTPRequestSchema) => void;
-  defaultEndPoint?: string;
-  defaultMethod?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  defaultBody?: string;
+  onSubmit: (values: HTTPRequestFormValues) => void;
+  defaultValues?: Partial<HTTPRequestFormValues>;
 }
 
 const HTTPRequestDialog = ({
   open,
   onOpenChange,
   onSubmit,
-  defaultBody,
-  defaultEndPoint,
-  defaultMethod = "GET",
+  defaultValues,
 }: Props) => {
-  const form = useForm<HTTPRequestSchema>({
+  const form = useForm<HTTPRequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      endpoint: defaultEndPoint,
-      body: defaultBody,
-      method: defaultMethod,
+      endpoint: defaultValues?.endpoint || "",
+      method: defaultValues?.method || "GET",
+      body: defaultValues?.body || "",
     },
   });
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
-  const handleSubmit = (values: HTTPRequestSchema) => {
+  const handleSubmit = (values: HTTPRequestFormValues) => {
     onSubmit(values);
     onOpenChange(false);
   };
@@ -74,18 +70,20 @@ const HTTPRequestDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
-        endpoint: defaultEndPoint,
-        body: defaultBody,
-        method: defaultMethod,
+        endpoint: defaultValues?.endpoint || "",
+        method: defaultValues?.method || "GET",
+        body: defaultValues?.body || "",
       });
     }
-  }, [open, defaultBody, defaultEndPoint, defaultMethod, form]);
+  }, [open, defaultValues, form]);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>HTTP Request</DialogTitle>
-          <DialogDescription>Configure setting for the HTTP Request.</DialogDescription>
+          <DialogDescription>
+            Configure setting for the HTTP Request.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
