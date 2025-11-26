@@ -3,8 +3,8 @@ import { inngest } from "./client";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
+import { getExecutor } from "@/features/executions/lib/executor-registory";
 
-const google = createGoogleGenerativeAI();
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
   { event: "worflows/execute.workflow" },
@@ -29,6 +29,20 @@ export const executeWorkflow = inngest.createFunction(
       return topologicalSort(workflow.nodes, workflow.connections);
     });
 
-    return { sortedNodes };
+    // Initialize the context with any initial data from the trigger
+    let context = event.data.initialData || {};
+
+    // Execute Each Node
+    for (const node of sortedNodes) {
+      const executor = getExecutor(node.type);
+      context = await executor({
+        data:node.data as Record<string, unknown>,
+        nodeId:node.id,
+        context, 
+        step
+      })
+    }
+
+    return { workflowId, context };
   }
 );
