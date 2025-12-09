@@ -7,6 +7,7 @@ import { BaseExecutionNode } from "../base-execution-node";
 import HTTPRequestDialog, { HTTPRequestFormValues } from "./dialog";
 
 type HttpRequestNodeData = {
+  variableName?:string
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
@@ -21,6 +22,7 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
     : "not configured";
   const [open, setOpen] = useState(false);
   const { setNodes } = useReactFlow();
+  
   const handleSave = (values: HTTPRequestFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
