@@ -1,11 +1,21 @@
 import { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, { Options } from "ky";
+import Handlebars from "handlebars"
+
+Handlebars.registerHelper("json", (context)=> {
+  const stringified = JSON.stringify(context, null,2)
+  const safeString = new Handlebars.SafeString(stringified)
+
+  return safeString
+
+})
+
 type HttpRequestData = {
-  variableName?: string;
+  variableName: string;
   body?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  endpoint: string;
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 };
 
 export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
@@ -21,17 +31,26 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
   }
 
   if (!data.variableName) {
-    throw new NonRetriableError("Varibale name not configured");
+    throw new NonRetriableError("HTTP request node: Varibale name not configured");
   }
+
+  if (!data.method) {
+    throw new NonRetriableError("HTTP request node: Method not configured");
+  }
+
   const result = await step.run("http-request", async () => {
-    const endpoint = data.endpoint!;
-    const method = data.method || "GET";
+    const endpoint =Handlebars.compile(data.endpoint)(context)
+    console.log({endpoint})
+    const method = data.method;
 
     const options: Options = { method };
 
     if (["PUT", "PATCH", "POST"].includes(method)) {
       if (data.body) {
-        options.body = data.body;
+        const resolved = Handlebars.compile(data.body || "{}")(context)
+        console.log({resolved})
+        JSON.parse(resolved)
+        options.body = resolved;
         options.headers = {
           "Content-Type": "application/json",
         };
@@ -51,18 +70,12 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       },
     };
 
-    if (data.variableName) {
       return {
         ...context,
         [data.variableName]: responsePayload,
       };
-    }
+    
 
-    // Fallback to redirect httpResponsefor backward compatibility
-    return {
-      ...context,
-      ...responsePayload,
-    };
   });
 
   // TODO: Publish "Success" state for http request
