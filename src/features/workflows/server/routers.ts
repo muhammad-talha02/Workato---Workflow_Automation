@@ -20,7 +20,7 @@ export const workflowsRouter = createTRPCRouter({
           userId: ctx.auth.user.id,
         },
       });
-      await inngest.send({ name: "worflows/execute.workflow", data: {workflowId:input.id} });
+      await inngest.send({ name: "workflows/execute.workflow", data: {workflowId:input.id} });
       return workflow;
     }),
   create: premuimProcedure.mutation(({ ctx }) => {
