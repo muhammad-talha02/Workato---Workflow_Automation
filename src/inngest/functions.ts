@@ -4,11 +4,13 @@ import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
 import { getExecutor } from "@/features/executions/lib/executor-registory";
+import { httpRequestChannel } from "./channels/http-request";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
-  { event: "workflows/execute.workflow" },
-  async ({ event, step }) => {
+  { event: "workflows/execute.workflow", channels: [httpRequestChannel()] },
+
+  async ({ event, step, publish }) => {
     const workflowId = event.data.workflowId;
 
     if (!workflowId) {
@@ -36,11 +38,12 @@ export const executeWorkflow = inngest.createFunction(
     for (const node of sortedNodes) {
       const executor = getExecutor(node.type);
       context = await executor({
-        data:node.data as Record<string, unknown>,
-        nodeId:node.id,
-        context, 
-        step
-      })
+        data: node.data as Record<string, unknown>,
+        nodeId: node.id,
+        context,
+        step,
+        publish
+      });
     }
 
     return { workflowId, context };
