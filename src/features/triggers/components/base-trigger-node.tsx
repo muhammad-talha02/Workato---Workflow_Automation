@@ -11,6 +11,7 @@ import Image from "next/image";
 import { BaseHandle } from "../../../components/react-flow/base-handle";
 import WorkflowNode from "../../../components/workflow-node";
 import { NodeStatus, NodeStatusIndicator } from "@/components/react-flow/node-status-indicator";
+import { cn } from "@/lib/utils";
 
 interface BaseTriggerNodeProps extends NodeProps {
   icon: LucideIcon | string;
@@ -57,7 +58,7 @@ export const BaseTriggerNode = memo(
         <NodeStatusIndicator status={status} variant="border" className="rounded-[6px] rounded-l-2xl">
           <BaseNode
             onDoubleClick={onDoubleClick}
-            className="rounded-l-2xl relative group"
+            className={cn("relative group","rounded-l-2xl")}
             status={status}
           >
             <BaseNodeContent>
