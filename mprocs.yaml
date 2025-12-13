@@ -4,3 +4,6 @@ procs:
 
  next: 
   shell: "npm run dev"
+
+ ngrok: 
+  shell: "npm run ngrok:dev"
