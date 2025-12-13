@@ -36,6 +36,12 @@ const triggerNodes: NodeTypeOption[] = [
       "Runs the flow on clicking a button. Good for geting starting quickly",
     icon: MousePointerIcon,
   },
+  {
+    type: NodeType.GOOGLE_FORM_TRIGGER,
+    label: "Google Form",
+    description: "Runs the flow when a google form is submit",
+    icon: "/logos/googleform.svg",
+  },
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -108,30 +114,30 @@ export const NodeSelector = ({
           return;
         }
       }
-         setNodes((nodes) => {
-          const hasInitialTrigger = nodes.some(
-            (node) => node.type === NodeType.INITIAL
-          );
-          const centerX = window.innerWidth / 2;
-          const centerY = window.innerHeight / 2;
-          const flowPosition = screenToFlowPosition({
-            x: centerX + (Math.random() - 0.5) * 200,
-            y: centerY + (Math.random() - 0.5) * 200,
-          });
-
-          const newNode = {
-            id: createId(),
-            data: {},
-            position: flowPosition,
-            type: selection.type,
-          };
-
-          if (hasInitialTrigger) {
-            return [newNode];
-          }
-          return [...nodes, newNode];
+      setNodes((nodes) => {
+        const hasInitialTrigger = nodes.some(
+          (node) => node.type === NodeType.INITIAL
+        );
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const flowPosition = screenToFlowPosition({
+          x: centerX + (Math.random() - 0.5) * 200,
+          y: centerY + (Math.random() - 0.5) * 200,
         });
-        onOpenChange(false);
+
+        const newNode = {
+          id: createId(),
+          data: {},
+          position: flowPosition,
+          type: selection.type,
+        };
+
+        if (hasInitialTrigger) {
+          return [newNode];
+        }
+        return [...nodes, newNode];
+      });
+      onOpenChange(false);
     },
     [getNodes, setNodes, screenToFlowPosition, onOpenChange]
   );
