@@ -3,4 +3,5 @@ export enum InngestChannels {
   manualTriggerChannel = "manual-trigger-execution",
   googleFormTriggerChannel = "google-form-trigger-execution",
   stripeTriggerChannel = "stripe-trigger-execution",
+  geminiChannel = "gemini-execution",
 }
