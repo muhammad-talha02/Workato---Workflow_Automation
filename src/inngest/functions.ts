@@ -1,6 +1,7 @@
 import { getExecutor } from "@/features/executions/lib/executor-registory";
 import prisma from "@/lib/db";
 import { NonRetriableError } from "inngest";
+import { geminiChannel } from "./channels/gemini";
 import { googleFormTriggerChannel } from "./channels/google-form-trigger";
 import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/manual-trigger";
@@ -17,6 +18,7 @@ export const executeWorkflow = inngest.createFunction(
       manualTriggerChannel(),
       googleFormTriggerChannel(),
       stripeTriggerChannel(),
+      geminiChannel(),
     ],
   },
 
