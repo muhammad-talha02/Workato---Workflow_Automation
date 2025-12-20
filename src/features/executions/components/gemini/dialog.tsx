@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,29 +9,22 @@ import {
 } from "@/components/ui/dialog";
 import {
   Form,
-  FormDescription,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
-import z from "zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import z from "zod";
 
 export const GEMINI_MODELS = [
+  "gemini-2.0-flash",
   "gemini-1.5-flash",
   "gemini-1.5-flash-8b",
   "gemini-1.5-pro",
@@ -116,39 +110,12 @@ const GeminiDialog = ({
                   <FormLabel>Variable Name</FormLabel>
 
                   <FormControl>
-                    <Input placeholder="myApiCall" {...field} />
+                    <Input placeholder="myGemini" {...field} />
                   </FormControl>
 
                   <FormDescription>
                     Use this name to reference the result in other nodes:
-                    {`{{${variableName || "myApiCall"}.httpResponse.data}}`}
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="model"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Model</FormLabel>
-                  <Select onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a model" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {GEMINI_MODELS.map((x) => (
-                        <SelectItem key={x} value={x}>
-                          {x}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    The Google Gemini model to use for the completion
+                    {`{{${variableName || "myGemini"}.aiResponse.data}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

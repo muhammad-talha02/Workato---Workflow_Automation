@@ -5,8 +5,8 @@ import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { useNodeStatus } from "../../hooks/use-node-status";
 import { BaseExecutionNode } from "../base-execution-node";
-import { fetchHttpRequestRealTimeToken } from "./actions";
-import GeminiDialog, { GEMINI_MODELS, GeminiFormValues } from "./dialog";
+import { fetchGeminiRealTimeToken } from "./actions";
+import GeminiDialog, { GeminiFormValues } from "./dialog";
 
 type GeminiNodeData = {
   model?: string;
@@ -19,18 +19,18 @@ type GeminiNodeType = Node<GeminiNodeData>;
 export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   const nodeData = props.data;
   const description = nodeData?.userPrompt
-    ? `${nodeData?.model || GEMINI_MODELS[0]}: ${nodeData.userPrompt.slice(0,50)}...`
+    ? ` ${nodeData.userPrompt.slice(0,50)}...`
     : "Not configured";
   const [open, setOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: InngestChannels.httpRequestChannel,
+    channel: InngestChannels.geminiChannel,
     topic: "status",
-    refreshToken: fetchHttpRequestRealTimeToken,
+    refreshToken: fetchGeminiRealTimeToken,
   });
-console.log({nodeStatus})
+
   const handleSave = (values: GeminiFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
