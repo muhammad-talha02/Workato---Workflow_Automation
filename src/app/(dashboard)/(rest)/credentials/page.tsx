@@ -1,12 +1,28 @@
-import { requiredAuth } from '@/lib/better-auth/auth-utils'
-import React from 'react'
+import { credentialsParamsLoader } from "@/features/credentials/server/params-loader";
+import { prefetchCredentials } from "@/features/credentials/server/prefetch";
+import { requiredAuth } from "@/lib/better-auth/auth-utils";
+import { HydrateClient } from "@/trpc/server";
+import { SearchParams } from "nuqs/server";
+import React, { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
-const CredientailsPage = async () => {
-        await requiredAuth()
-    
+type Props = {
+  searchParams: Promise<SearchParams>;
+};
+const CredientailsPage = async ({ searchParams }: Props) => {
+  await requiredAuth();
+  const params = await credentialsParamsLoader(searchParams);
+  prefetchCredentials(params);
+
   return (
-    <div>CredientailsPage</div>
-  )
-}
+    <div>
+      <HydrateClient>
+        <ErrorBoundary fallback={<p>Error</p>}>
+          <Suspense fallback={<p>Loading...</p>}>List Credentials</Suspense>
+        </ErrorBoundary>
+      </HydrateClient>
+    </div>
+  );
+};
 
-export default CredientailsPage
+export default CredientailsPage;
