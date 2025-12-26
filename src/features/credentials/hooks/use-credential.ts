@@ -23,7 +23,7 @@ export const useSusupenseCredential = (id: string) => {
 };
 
 // Create Credential
-export const useCreatCredential = () => {
+export const useCreateCredential = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 

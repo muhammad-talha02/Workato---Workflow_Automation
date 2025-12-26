@@ -1,3 +1,7 @@
+import {
+  CredentialsContainer,
+  CredentialsList,
+} from "@/features/credentials/components/credentials";
 import { credentialsParamsLoader } from "@/features/credentials/server/params-loader";
 import { prefetchCredentials } from "@/features/credentials/server/prefetch";
 import { requiredAuth } from "@/lib/better-auth/auth-utils";
@@ -15,13 +19,15 @@ const CredientailsPage = async ({ searchParams }: Props) => {
   prefetchCredentials(params);
 
   return (
-    <div>
+    <CredentialsContainer>
       <HydrateClient>
         <ErrorBoundary fallback={<p>Error</p>}>
-          <Suspense fallback={<p>Loading...</p>}>List Credentials</Suspense>
+          <Suspense fallback={<p>Loading...</p>}>
+            <CredentialsList />
+          </Suspense>
         </ErrorBoundary>
       </HydrateClient>
-    </div>
+    </CredentialsContainer>
   );
 };
 
