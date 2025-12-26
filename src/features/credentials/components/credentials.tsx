@@ -11,7 +11,7 @@ import {
   LoadingView,
 } from "@/components/entity-components";
 import { useEntitySearch } from "@/hooks/use-entity-search";
-import { KeyRoundIcon } from "lucide-react";
+import { KeyIcon, KeyRoundIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import {
@@ -19,6 +19,9 @@ import {
   useSusupenseCredentials,
 } from "../hooks/use-credential";
 import { useCredentialsParams } from "../hooks/use-credential-params";
+import { formatDistanceToNow } from "date-fns";
+import { Credential, CredentialType } from "@/generated/prisma/browser";
+import Image from "next/image";
 
 export const CredentialsSearch = () => {
   const [params, setParams] = useCredentialsParams();
@@ -116,15 +119,39 @@ export const CredentialsEmpty = () => {
   );
 };
 
+const credentialsLogos = {
+  [CredentialType.OPENAI]: "/logos/openai.svg",
+  [CredentialType.GEMINI]: "/logos/gemini.svg",
+  [CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
+};
+
 export const CredentialItem = ({ data }: { data: Credential }) => {
   const removeCredential = useRemoveCredential();
+  const logo = credentialsLogos[data.type];
   return (
     <EntityItem
       href={`/credentials/${data.id}`}
-      title={data.type}
+      title={data.name}
+      subTitle={
+        <>
+          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+          &bull; Created{" "}
+          {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+        </>
+      }
       image={
         <div className="size-8 flex items-center justify-center">
-          <KeyRoundIcon className="size-5 text-muted-foreground" />
+          {logo ? (
+            <Image
+              src={logo}
+              alt={data.type}
+              width={20}
+              height={20}
+              className="size-5 text-muted-foreground"
+            />
+          ) : (
+            <KeyRoundIcon className="size-5 text-muted-foreground" />
+          )}
         </div>
       }
       onRemove={() => removeCredential.mutate({ id: data?.id })}
