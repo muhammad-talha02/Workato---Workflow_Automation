@@ -10,8 +10,11 @@ import {
   ErrorView,
   LoadingView,
 } from "@/components/entity-components";
+import { Credential, CredentialType } from "@/generated/prisma/browser";
 import { useEntitySearch } from "@/hooks/use-entity-search";
-import { KeyIcon, KeyRoundIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { KeyRoundIcon } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import {
@@ -19,9 +22,6 @@ import {
   useSusupenseCredentials,
 } from "../hooks/use-credential";
 import { useCredentialsParams } from "../hooks/use-credential-params";
-import { formatDistanceToNow } from "date-fns";
-import { Credential, CredentialType } from "@/generated/prisma/browser";
-import Image from "next/image";
 
 export const CredentialsSearch = () => {
   const [params, setParams] = useCredentialsParams();
