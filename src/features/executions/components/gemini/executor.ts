@@ -24,11 +24,11 @@ type GeminiData = {
 export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   data,
   nodeId,
+  userId,
   context,
   step,
   publish,
 }) => {
-
   await publish(
     geminiChannel().status({
       nodeId,
@@ -36,34 +36,34 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     })
   );
 
-  if(!data.variableName){
-        await publish(
+  if (!data.variableName) {
+    await publish(
       geminiChannel().status({
         nodeId,
         status: "error",
       })
     );
-    throw new NonRetriableError('Gemini node: Variable name is missing')
+    throw new NonRetriableError("Gemini node: Variable name is missing");
   }
 
-  if(!data.userPrompt){
-        await publish(
+  if (!data.userPrompt) {
+    await publish(
       geminiChannel().status({
         nodeId,
         status: "error",
       })
     );
-    throw new NonRetriableError('Gemini node: user prompt is missing')
+    throw new NonRetriableError("Gemini node: user prompt is missing");
   }
-  
-  if(!data.credentialId){
-        await publish(
+
+  if (!data.credentialId) {
+    await publish(
       geminiChannel().status({
         nodeId,
         status: "error",
       })
     );
-    throw new NonRetriableError('Gemini node: credential is missing')
+    throw new NonRetriableError("Gemini node: credential is missing");
   }
 
   const systemPrompt = data.systemPrompt
@@ -71,17 +71,23 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     : "You are a helpful assistant";
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  // TODO: fetch credientials that user selected
-  const credential = await step.run('get-credential', ()=>{
+  const credential = await step.run("get-credential", () => {
     return prisma.credential.findUnique({
-      where:{
-        id:data.credentialId,
-      }
-    })
-  })
+      where: {
+        id: data.credentialId,
+        userId,
+      },
+    });
+  });
 
-  if(!credential){
-    throw new NonRetriableError("Gemini node: credential not found")
+  if (!credential) {
+        await publish(
+      geminiChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
+    throw new NonRetriableError("Gemini node: credential not found");
   }
 
   const google = createGoogleGenerativeAI({
@@ -100,7 +106,6 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
       },
     });
 
-    console.log(JSON.stringify(steps, null,2))
     const text =
       steps?.[0].content[0]?.type === "text" ? steps?.[0].content[0]?.text : "";
     await publish(
@@ -122,6 +127,6 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
         status: "error",
       })
     );
-    throw error;
+    throw new NonRetriableError("Hey Error in Gemini Execution");
   }
 };
