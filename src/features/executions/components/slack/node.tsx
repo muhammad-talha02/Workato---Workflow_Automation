@@ -2,38 +2,36 @@
 
 import { InngestChannels } from "@/inngest/channels";
 import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
-import { GlobeIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { useNodeStatus } from "../../hooks/use-node-status";
 import { BaseExecutionNode } from "../base-execution-node";
-import { fetchHttpRequestRealTimeToken } from "./actions";
-import HTTPRequestDialog, { HTTPRequestFormValues } from "./dialog";
+import { fetchSlackRealTimeToken } from "./actions";
+import SlackDialog, { SlackFormValues } from "./dialog";
 
-type HttpRequestNodeData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: string;
+type SlackNodeData = {
+  webhookUrl?: string;
+  content?: string;
+  username?: string;
 };
 
-type HttpRequestNodeType = Node<HttpRequestNodeData>;
+type SlackNodeType = Node<SlackNodeData>;
 
-export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
+export const SlackNode = memo((props: NodeProps<SlackNodeType>) => {
   const nodeData = props.data;
-  const description = nodeData?.endpoint
-    ? `${nodeData?.method || "GET"}: ${nodeData.endpoint}`
-    : "not configured";
+  const description = nodeData?.content
+    ? ` ${nodeData.content.slice(0,50)}...`
+    : "Not configured";
   const [open, setOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: InngestChannels.httpRequestChannel,
+    channel: InngestChannels.slackChannel,
     topic: "status",
-    refreshToken: fetchHttpRequestRealTimeToken,
+    refreshToken: fetchSlackRealTimeToken,
   });
 
-  const handleSave = (values: HTTPRequestFormValues) => {
+  const handleSave = (values: SlackFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === props.id) {
@@ -55,14 +53,14 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
       <BaseExecutionNode
         {...props}
         id={props.id}
-        icon={GlobeIcon}
-        name="HTTP Request"
+        icon={'/logos/slack.svg'}
+        name="Slack"
         description={description}
         onSettings={() => setOpen(true)}
         onDoubleClick={() => setOpen(true)}
         status={nodeStatus}
       />
-      <HTTPRequestDialog
+      <SlackDialog
         open={open}
         onOpenChange={setOpen}
         onSubmit={handleSave}
@@ -72,4 +70,4 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
   );
 });
 
-HttpRequestNode.displayName = "HttpRequestNode";
+SlackNode.displayName = "SlackNode";

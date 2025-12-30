@@ -5,4 +5,5 @@ export enum InngestChannels {
   stripeTriggerChannel = "stripe-trigger-execution",
   geminiChannel = "gemini-execution",
   discordChannel = "discord-execution",
+  slackChannel = "slack-execution",
 }

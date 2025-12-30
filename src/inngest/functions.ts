@@ -9,6 +9,7 @@ import { stripeTriggerChannel } from "./channels/stripe-trigger";
 import { inngest } from "./client";
 import { topologicalSort } from "./utils";
 import { discordChannel } from "./channels/discord";
+import { slackChannel } from "./channels/slack";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow", retries: 1 },
@@ -20,7 +21,8 @@ export const executeWorkflow = inngest.createFunction(
       googleFormTriggerChannel(),
       stripeTriggerChannel(),
       geminiChannel(),
-      discordChannel()
+      discordChannel(),
+      slackChannel()
     ],
   },
 
