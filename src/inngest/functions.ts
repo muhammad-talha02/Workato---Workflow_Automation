@@ -10,9 +10,22 @@ import { inngest } from "./client";
 import { topologicalSort } from "./utils";
 import { discordChannel } from "./channels/discord";
 import { slackChannel } from "./channels/slack";
+import { ExecutionStatus } from "@/generated/prisma/enums";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow", retries: 1 },
+  { id: "execute-workflow", retries: 1,
+onFailure:async ({event, step})=>{
+return prisma.execution.update({
+  where:{inngestEventId:event.data.event.id},
+  data:{
+    status:ExecutionStatus.FAILED,
+    error:event.data.error.message,
+    errorStack:event.data.error.stack,
+  }
+})
+}
+
+   },
   {
     event: "workflows/execute.workflow",
     channels: [
@@ -22,17 +35,25 @@ export const executeWorkflow = inngest.createFunction(
       stripeTriggerChannel(),
       geminiChannel(),
       discordChannel(),
-      slackChannel()
+      slackChannel(),
     ],
   },
 
   async ({ event, step, publish }) => {
+    const inngestEventId = event.id;
     const workflowId = event.data.workflowId;
 
-    if (!workflowId) {
-      throw new NonRetriableError("Workflow ID is missing");
+    if (!workflowId || !inngestEventId) {
+      throw new NonRetriableError("Workflow id or Inngest event id is missing");
     }
-
+    await step.run("create-execution", async () => {
+      return prisma.execution.create({
+        data: {
+          workflowId,
+          inngestEventId,
+        },
+      });
+    });
     const sortedNodes = await step.run("prepare-workflow", async () => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
         where: {
@@ -74,6 +95,17 @@ export const executeWorkflow = inngest.createFunction(
         publish,
       });
     }
+
+    await step.run("update-execution", async () => {
+      return prisma.execution.update({
+        where: { inngestEventId, workflowId },
+        data: {
+          status: ExecutionStatus.SUCCESS,
+          completedAt: new Date(),
+          output: context,
+        },
+      });
+    });
 
     return { workflowId, context };
   }
