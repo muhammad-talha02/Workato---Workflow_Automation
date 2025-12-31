@@ -136,7 +136,7 @@ const SlackDialog = ({
                         Workflows {"->"} Webhooks
                       </FormDescription>
                       <FormDescription>
-                        Make sure the {`"key`} is {`"content"`}
+                        Make sure You have {`"content"`} variable
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
