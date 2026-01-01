@@ -13,19 +13,20 @@ import { slackChannel } from "./channels/slack";
 import { ExecutionStatus } from "@/generated/prisma/enums";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow", retries: 1,
-onFailure:async ({event, step})=>{
-return prisma.execution.update({
-  where:{inngestEventId:event.data.event.id},
-  data:{
-    status:ExecutionStatus.FAILED,
-    error:event.data.error.message,
-    errorStack:event.data.error.stack,
-  }
-})
-}
-
-   },
+  {
+    id: "execute-workflow",
+    retries: 1,
+    onFailure: async ({ event, step }) => {
+      return prisma.execution.update({
+        where: { inngestEventId: event.data.event.id },
+        data: {
+          status: ExecutionStatus.FAILED,
+          error: event.data.error.message,
+          errorStack: event.data.error.stack,
+        },
+      });
+    },
+  },
   {
     event: "workflows/execute.workflow",
     channels: [
