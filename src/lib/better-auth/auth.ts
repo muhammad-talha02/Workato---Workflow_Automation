@@ -8,10 +8,23 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins:[process.env.NEXT_PUBLIC_APP_URL!, process.env.NEXT_PUBLIC_NGROK_URL!],
+  trustedOrigins: [
+    process.env.NEXT_PUBLIC_APP_URL!,
+    process.env.NEXT_PUBLIC_NGROK_URL!,
+  ],
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
   },
   plugins: [
     polar({
@@ -25,10 +38,10 @@ export const auth = betterAuth({
               slug: "pro",
             },
           ],
-          successUrl:process.env.POLAR_SUCCESS_URL,
-          authenticatedUsersOnly:true
+          successUrl: process.env.POLAR_SUCCESS_URL,
+          authenticatedUsersOnly: true,
         }),
-        portal()
+        portal(),
       ],
     }),
   ],

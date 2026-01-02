@@ -54,7 +54,6 @@ const formSchema = z.object({
   systemPrompt: z.string().optional(),
   credentialId: z.string().min(1, "Credential is required"),
   userPrompt: z.string().min(1, { message: "User prompt is required" }),
-  //TODO .refine()
 });
 export type GeminiFormValues = z.infer<typeof formSchema>;
 
