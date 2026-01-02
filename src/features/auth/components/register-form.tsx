@@ -49,6 +49,12 @@ const RegisterForm = () => {
   });
   const isFormSubmitting = form.formState.isSubmitting;
 
+  const signInGithub = async () => {
+    await authClient.signIn.social({
+      provider: "github",
+    });
+  };
+
   const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     await authClient.signUp.email(
       {
@@ -83,7 +89,7 @@ const RegisterForm = () => {
                     variant="outline"
                     className="w-full cursor-pointer"
                     type="button"
-                    disabled={isFormSubmitting}
+                    onClick={signInGithub}
                   >
                     <Image
                       src={"logos/github.svg"}

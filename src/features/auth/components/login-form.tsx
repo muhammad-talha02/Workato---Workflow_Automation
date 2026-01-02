@@ -40,10 +40,22 @@ const LoginForm = () => {
       password: "",
     },
   });
-const isFormSubmitting = form.formState.isSubmitting
+  const isFormSubmitting = form.formState.isSubmitting;
+
+  const signInGithub = async () => {
+    await authClient.signIn.social({
+      provider: "github",
+    });
+  };
+
+  const signInGoogle = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    });
+  };
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
-  await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         email: data.email,
         password: data.password,
@@ -57,7 +69,8 @@ const isFormSubmitting = form.formState.isSubmitting
           toast.error(ctx.error.message);
         },
       }
-    );  };
+    );
+  };
   return (
     <div className="flex  flex-col gap-6">
       <Card>
@@ -74,18 +87,28 @@ const isFormSubmitting = form.formState.isSubmitting
                     variant="outline"
                     className="w-full cursor-pointer"
                     type="button"
-                    disabled={isFormSubmitting}
+                    onClick={signInGithub}
                   >
-                    <Image src={"logos/github.svg"} width={20} height={20} alt="Github"  />
+                    <Image
+                      src={"logos/github.svg"}
+                      width={20}
+                      height={20}
+                      alt="Github"
+                    />
                     Continue With Github
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full cursor-pointer"
                     type="button"
-                    disabled={isFormSubmitting}
+                    onClick={signInGoogle}
                   >
-                    <Image src={"logos/google.svg"} width={20} height={20} alt="Github"  />
+                    <Image
+                      src={"logos/google.svg"}
+                      width={20}
+                      height={20}
+                      alt="Github"
+                    />
                     Continue With Google
                   </Button>
                 </div>
@@ -124,11 +147,22 @@ const isFormSubmitting = form.formState.isSubmitting
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={isFormSubmitting} className="w-full">Login</Button>
+                  <Button
+                    type="submit"
+                    disabled={isFormSubmitting}
+                    className="w-full"
+                  >
+                    Login
+                  </Button>
                 </div>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <Link href="/sign-up" className="underline underline-offset-4">Sign Up</Link>
+                  <Link
+                    href="/sign-up"
+                    className="underline underline-offset-4"
+                  >
+                    Sign Up
+                  </Link>
                 </div>
               </div>
             </form>
