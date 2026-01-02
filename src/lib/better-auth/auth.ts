@@ -8,9 +8,6 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: [
-    "https://workato.vercel.app/",
-  ],
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
