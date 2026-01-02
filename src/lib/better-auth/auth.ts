@@ -9,7 +9,7 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   trustedOrigins: [
-    process.env.NEXT_PUBLIC_APP_URL!,
+    "https://workato.vercel.app/",
   ],
   emailAndPassword: {
     enabled: true,
