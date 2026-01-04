@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   devIndicators:false,
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/.prisma/client/**/*'],
+    '/*': ['./node_modules/.prisma/client/**/*'],
+  },
   async redirects (){
     return [
       {

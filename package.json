@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "inngest:dev": "inngest-cli dev",
     "dev:all": "mprocs",
     "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "ngrok:dev": "ngrok http --url=hagiographical-anisha-asconoid.ngrok-free.dev 3000"
   },
   "dependencies": {
