@@ -1,25 +1,14 @@
 import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import { fa } from "zod/v4/locales";
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin'
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   devIndicators:false,
-  typescript:{
-ignoreBuildErrors:true
-  },
   outputFileTracingIncludes: {
     '/api/**/*': ['./node_modules/.prisma/client/**/*'],
     '/*': ['./node_modules/.prisma/client/**/*'],
-  },
-   webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.plugins = [...config.plugins, new PrismaPlugin()]
-    }
-
-    return config
   },
   async redirects (){
     return [
