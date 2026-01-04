@@ -12,7 +12,7 @@ import {
 import {
   Execution,
   ExecutionStatus
-} from "@/generated/prisma/browser";
+} from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import {
   CheckCircle2Icon,

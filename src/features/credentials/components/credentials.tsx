@@ -10,7 +10,7 @@ import {
   ErrorView,
   LoadingView,
 } from "@/components/entity-components";
-import { Credential, CredentialType } from "@/generated/prisma/browser";
+// import { Credential, CredentialType } from "@/generated/prisma/browser";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { formatDistanceToNow } from "date-fns";
 import { KeyRoundIcon } from "lucide-react";
@@ -22,6 +22,7 @@ import {
   useSusupenseCredentials,
 } from "../hooks/use-credential";
 import { useCredentialsParams } from "../hooks/use-credential-params";
+import { Credential, CredentialType } from "@prisma/client";
 
 export const CredentialsSearch = () => {
   const [params, setParams] = useCredentialsParams();

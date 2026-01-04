@@ -10,7 +10,8 @@ import { inngest } from "./client";
 import { topologicalSort } from "./utils";
 import { discordChannel } from "./channels/discord";
 import { slackChannel } from "./channels/slack";
-import { ExecutionStatus } from "@/generated/prisma/enums";
+import { ExecutionStatus } from "@prisma/client";
+// import { ExecutionStatus } from "@prisma/client";
 
 export const executeWorkflow = inngest.createFunction(
   {
