@@ -12,7 +12,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
         >
           <Image src="logos/logo.svg" width={30} height={30} alt="Workato" />
         </Link>
-        {children};
+        {children}
       </div>
     </div>  )
 }
