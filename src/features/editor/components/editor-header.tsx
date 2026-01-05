@@ -38,8 +38,12 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
   };
   return (
     <div className="ml-auto">
-      <Button size={"sm"} disabled={saveWorkflow.isPending} onClick={handleSave}>
-        <SaveIcon className="size-4"  />
+      <Button
+        size={"sm"}
+        disabled={saveWorkflow.isPending}
+        onClick={handleSave}
+      >
+        <SaveIcon className="size-4" />
         Save
       </Button>
     </div>
@@ -85,6 +89,10 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
       setIsEditing(false);
     }
   };
+
+  if (updateWorkflowName.isPending) {
+    return <Loader2Icon className="size-4 text-primary animate-spin" />;
+  }
 
   if (isEditing) {
     return (

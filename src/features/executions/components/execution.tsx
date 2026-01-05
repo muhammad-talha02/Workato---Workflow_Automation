@@ -115,7 +115,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
             <p className="text-sm font-medium text-muted-foreground">
               Event ID
             </p>
-            <p className="text-sm">{execution.inngestEventId}</p>
+            <p className="text-sm break-all">{execution.inngestEventId}</p>
           </div>
         </div>
         {execution.error && (
