@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ExecutionStatus } from "@/generated/prisma/enums";
+import { ExecutionStatus } from "@prisma/client";
 import {
   CheckCircle2Icon,
   ClockIcon,
