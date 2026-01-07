@@ -10,7 +10,7 @@ import {
   ErrorView,
   LoadingView,
 } from "@/components/entity-components";
-import { Credential, CredentialType } from "@/generated/prisma/browser";
+import { Credential, CredentialType } from "@prisma/client";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { formatDistanceToNow } from "date-fns";
 import { KeyRoundIcon } from "lucide-react";

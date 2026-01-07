@@ -13,13 +13,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { NodeType } from "@/generated/prisma/enums";
+import { NodeType } from "@prisma/client";
 import { ReactNode, useCallback } from "react";
 import Image from "next/image";
 import { Separator } from "./ui/separator";
 import { toast } from "sonner";
 
-// import {NodeType} from "@/generated/prisma/browser"
+// import {NodeType} from "@prisma/client"
 
 export type NodeTypeOption = {
   type: NodeType;
